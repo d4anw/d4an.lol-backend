@@ -73,8 +73,8 @@ async function handleViewRequest(req, res) {
     if (updateError) throw updateError;
 
     res.setHeader(
-      'Set-Cookie',
-      `${cookieName}=true; Max-Age=1800; Path=/; SameSite=Lax; HttpOnly; Secure`
+    'Set-Cookie',
+    `${cookieName}=true; Max-Age=1800; Path=/; SameSite=None; HttpOnly; Secure`
     );
 
     return res.json({ total: newTotal });
