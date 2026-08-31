@@ -1,20 +1,37 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Add CORS headers
+// Add CORS headers - MUST be before other middleware
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  
+  // Allow requests from your domain and localhost for testing
+  const allowedOrigins = [
+    'https://d4an-lol',
+    'https://d4an-lol.onrender.com',
+    'http://localhost:3000',
+    'http://localhost:5500'
+  ];
+  
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
   next();
 });
+
+app.use(express.json());
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -25,8 +42,6 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 const cookieName = 'd4an_viewed';
-
-app.use(express.json());
 
 async function handleViewRequest(req, res) {
   try {
@@ -51,7 +66,6 @@ async function handleViewRequest(req, res) {
     }
 
     const newTotal = total + 1;
-
     const { error: updateError } = await supabase
       .from('site_views')
       .update({ total: newTotal })
@@ -61,7 +75,7 @@ async function handleViewRequest(req, res) {
 
     res.setHeader(
       'Set-Cookie',
-      `${cookieName}=true; Max-Age=1800; Path=/; SameSite=Lax; HttpOnly`
+      `${cookieName}=true; Max-Age=1800; Path=/; SameSite=Lax; HttpOnly; Secure`
     );
 
     return res.json({ total: newTotal });
