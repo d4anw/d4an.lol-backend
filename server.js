@@ -9,21 +9,20 @@ app.use((req, res, next) => {
   
   // Allow requests from your domain and localhost for testing
   const allowedOrigins = [
-    'https://d4an-lol',
-    'https://d4an-lol.onrender.com',
+    'https://d4an.lol',
+    'https://www.d4an.lol',
     'http://localhost:3000',
-    'http://localhost:5500'
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
   ];
   
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
