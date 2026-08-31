@@ -1,7 +1,27 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
+const { Client, GatewayIntentBits } = require('discord.js');
+
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Discord Bot Setup
+const bot = new Client({ 
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences, GatewayIntentBits.DirectMessages] 
+});
+
+const BOT_TOKEN = 'MTU0MzkxODE2NjM2NTgzMTIzOA.G5wNE8.izGoZcpL9E0xOeap6i5lbPP7MUIfAfvM588XPY';
+const USER_ID = '545564157026631701';
+
+bot.login(BOT_TOKEN);
+
+bot.on('ready', () => {
+  console.log(`✅ Discord bot logged in as ${bot.user.tag}`);
+});
+
+bot.on('error', (error) => {
+  console.error('Discord bot error:', error);
+});
 
 // Add CORS headers - MUST be before other middleware
 app.use((req, res, next) => {
@@ -73,8 +93,8 @@ async function handleViewRequest(req, res) {
     if (updateError) throw updateError;
 
     res.setHeader(
-    'Set-Cookie',
-    `${cookieName}=true; Max-Age=1800; Path=/; SameSite=None; HttpOnly; Secure`
+      'Set-Cookie',
+      `${cookieName}=true; Max-Age=1800; Path=/; SameSite=None; HttpOnly; Secure`
     );
 
     return res.json({ total: newTotal });
@@ -84,13 +104,40 @@ async function handleViewRequest(req, res) {
   }
 }
 
+// Discord Status Endpoint
+app.get('/api/discord-status', async (req, res) => {
+  try {
+    const user = await bot.users.fetch(USER_ID);
+    const presence = user.presence;
+    
+    let status = 'offline';
+    
+    if (presence && presence.status) {
+      status = presence.status; // 'online', 'idle', 'offline', 'dnd'
+    }
+    
+    res.json({
+      status: status,
+      last_online: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Discord status error:', error);
+    res.json({
+      status: 'offline',
+      last_online: new Date().toISOString()
+    });
+  }
+});
+
+// View Counter Endpoints
 app.get('/api/view', handleViewRequest);
 app.post('/api/view', handleViewRequest);
 
+// Health Check
 app.get('/', (req, res) => {
-  res.json({ ok: true, message: 'view counter api' });
+  res.json({ ok: true, message: 'D4an API running', discord: bot.isReady() ? 'connected' : 'connecting' });
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
 });
