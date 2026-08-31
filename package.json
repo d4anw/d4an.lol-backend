@@ -1,5 +1,5 @@
 {
-  "name": "d4an-views-api",
+  "name": "d4an-lol-backend",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -12,8 +12,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.4",
-    "discord.js": "^14.27.0",
     "express": "^5.2.1"
   }
 }
