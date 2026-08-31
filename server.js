@@ -10,8 +10,8 @@ const bot = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences, GatewayIntentBits.DirectMessages] 
 });
 
-const BOT_TOKEN = 'MTU0MzkxODE2NjM2NTgzMTIzOA.G5wNE8.izGoZcpL9E0xOeap6i5lbPP7MUIfAfvM588XPY';
-const USER_ID = '545564157026631701';
+const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
+const USER_ID = process.env.DISCORD_USER_ID;
 
 bot.login(BOT_TOKEN);
 
